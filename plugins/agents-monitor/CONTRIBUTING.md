@@ -1,7 +1,8 @@
-# Contributing
+# Como contribuir
 
-1. Install Claude Code 2.1.286 or newer.
-2. Clone this repository and run the plugin from its folder: `claude --plugin-dir plugins/agents-monitor`.
-3. Before a pull request, run `claude plugin validate plugins/agents-monitor` and `claude plugin test plugins/agents-monitor`.
-4. Keep the mod free of network calls and file reads. A change that adds either needs a note in the README first.
-5. Update the price table in `hooks/model.ts` with its date when prices change.
+1. Instale o Claude Code 2.1.286 ou mais recente.
+2. Clone o repositório e carregue o plugin a partir da pasta dele: `claude --plugin-dir plugins/agents-monitor`.
+3. Antes de abrir um pull request, rode `claude plugin validate plugins/agents-monitor` e `claude plugin test plugins/agents-monitor`.
+4. Não adicione chamadas de rede nem leitura de arquivos. Se uma mudança precisar disso, descreva antes no README.
+5. Quando os preços dos modelos mudarem, atualize a tabela em `hooks/model.ts` e a data nela.
+6. Textos da interface ficam em `hooks/model.ts`, em português e inglês. Mantenha os dois idiomas alinhados.

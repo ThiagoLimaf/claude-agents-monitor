@@ -1,8 +1,11 @@
 {
   "name": "agents-monitor",
   "version": "0.2.0",
-  "description": "A light alternative to savvy-progress: a band above the prompt and a /monitor pane with pixel agents, a dithered steps bar, time, the engine's session cost and context, and the prompt cache countdown.",
-  "author": { "name": "ThiagoLimaf", "url": "https://github.com/ThiagoLimaf" },
+  "description": "Alternativa leve ao savvy-progress: faixa acima do prompt e painel /monitor com agentes em pixel, etapas, tempo, custo e contexto.",
+  "author": {
+    "name": "ThiagoLimaf",
+    "url": "https://github.com/ThiagoLimaf"
+  },
   "license": "MIT",
   "homepage": "https://github.com/ThiagoLimaf/claude-agents-monitor/tree/main/plugins/agents-monitor",
   "repository": "https://github.com/ThiagoLimaf/claude-agents-monitor",
@@ -10,17 +13,23 @@
   "userConfig": {
     "language": {
       "type": "string",
-      "title": "Language",
-      "description": "pt (Português) or en (English)",
+      "title": "Idioma",
+      "description": "pt (Português) ou en (English)",
       "default": "pt",
-      "options": ["pt", "en"]
+      "options": [
+        "pt",
+        "en"
+      ]
     },
     "autoOpen": {
       "type": "string",
-      "title": "Open the monitor pane",
-      "description": "subagents: when a subagent starts, once per turn; never: only with /monitor",
+      "title": "Abrir o painel do monitor",
+      "description": "subagents: quando um subagente começa, uma vez por turno; never: só com /monitor",
       "default": "subagents",
-      "options": ["subagents", "never"]
+      "options": [
+        "subagents",
+        "never"
+      ]
     }
   }
 }

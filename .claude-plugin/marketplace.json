@@ -1,12 +1,15 @@
 {
   "name": "claude-agents-monitor",
-  "owner": { "name": "ThiagoLimaf", "url": "https://github.com/ThiagoLimaf" },
-  "description": "Monitor mods for Claude Code: a light alternative to savvy-progress, in the same place.",
+  "owner": {
+    "name": "ThiagoLimaf",
+    "url": "https://github.com/ThiagoLimaf"
+  },
+  "description": "Mods para o Claude Code: uma alternativa leve ao savvy-progress, no mesmo lugar.",
   "plugins": [
     {
       "name": "agents-monitor",
       "source": "./plugins/agents-monitor",
-      "description": "A band above the prompt and a /monitor pane with pixel agents, steps, time, cost and context."
+      "description": "Faixa acima do prompt e painel /monitor com agentes em pixel, etapas, tempo, custo e contexto."
     }
   ]
 }

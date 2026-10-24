@@ -1,42 +1,94 @@
 # agents-monitor
 
-A Claude Code mod: a light, parallel alternative to [savvy-progress](https://github.com/johnnyvizz/claude-kit/tree/main/plugins/savvy-progress). It works in any conversation, not only in savvy-flow runs, and it costs no model tokens: it makes no model calls, reads no files, uses no network, and registers no tool for Claude to see.
+Um mod para o Claude Code que mostra o que está acontecendo na conversa: uma faixa acima do campo de digitação e um painel aberto com `/monitor`. É uma alternativa leve e paralela ao [savvy-progress](https://github.com/johnnyvizz/claude-kit/tree/main/plugins/savvy-progress). Funciona em qualquer conversa, não só nos fluxos do savvy-flow.
 
-- **Band** above the prompt: the figures of the turn, a dithered pixel bar of the main session's steps, the turn's time, the turn's cost, the prompt cache countdown and the context fill. The cache countdown turns amber 20 minutes before it expires and red at 10, as session-band does. `×N` opens the pane; `×` hides the band for the session.
-- **Pane** (`/monitor`): three tiles (cost, tokens, time), the agents on a dotted grid, the steps, and the activity. Each agent is a pixel figure in its role's costume. Figures walk while they work, wait while a subagent runs, hop when they finish, and fade when they fail. `◀ ▶` reorder the subagents; the done group folds away.
-- **Motion** is pure CSS, run by the compositor: the walk, the blinking pixels in the bar, the live dot. `prefers-reduced-motion` stops all of it. The clock redraws once a second only while a turn is live.
-- **Cost and context** come from the engine's own session figures, so the band shows what the session really costs. Per-agent figures are estimates, marked `≈`.
+Ele não gasta tokens do modelo: não faz chamadas ao modelo, não lê arquivos, não usa a internet e não registra nenhuma ferramenta para o Claude.
 
-## Commands
+## Como usar
 
-- `/monitor` opens or closes the pane.
-- `/monitor on` and `/monitor off` turn the monitor on or off. The choice stays across sessions.
-- `/monitor status` says whether it is on.
-- `/monitor compact` folds the pane into one strip of figures.
+### A faixa
 
-## Settings
+Aparece acima do campo de digitação depois do primeiro pedido da sessão. Mostra:
 
-- `language`: `pt` (Português, the default) or `en`.
-- `autoOpen`: `subagents` (the default) opens the pane when a subagent starts, once per turn; `never` opens it only with `/monitor`.
+- os bonequinhos da conversa: o Claude e os subagentes;
+- uma barra pontilhada com as etapas feitas pelo Claude;
+- o tempo do turno atual;
+- o custo do turno, em dólares, pelos números reais da sessão;
+- a contagem do cache de prompt. Ela fica âmbar nos últimos 20 minutos e vermelha nos últimos 10, porque o cache expira uma hora depois da última resposta;
+- o contexto usado, em porcentagem. Fica âmbar a partir de 65% e vermelho a partir de 85%.
 
-Set them in `/config`, or in `~/.claude/settings.json`:
+Os botões da faixa:
+
+- `×N` abre ou fecha o painel. O N é o número de subagentes.
+- `×` esconde a faixa nesta sessão. Para mostrar de novo, use `/monitor on`.
+
+### O painel
+
+Abra com `/monitor`. Ele mostra:
+
+- três blocos: custo, tokens e tempo;
+- os agentes sobre uma grade pontilhada. Cada um tem um personagem pixelado com a cor do seu papel;
+- as etapas da conversa, na ordem em que aconteceram;
+- o histórico de atividade, com as linhas mais recentes primeiro.
+
+Os personagens andam quando estão trabalhando, ficam parados quando aguardam outro agente, pulam quando terminam e ficam apagados quando falham.
+
+Os botões `◀` e `▶` mudam a ordem dos subagentes. O grupo "Concluídos" pode ser recolhido.
+
+### Papéis
+
+Cada subagente recebe um papel pelo nome do tipo dele:
+
+| Papel | Quando aparece |
+| --- | --- |
+| Pesquisa | tipos com "explore", "search" ou "research" |
+| Planejamento | tipos com "plan" |
+| Engenharia | tipos com "general", "code", "build" ou "implement" |
+| Revisão | tipos com "review", "audit", "critic" ou "check" |
+| Testes | tipos com "test" |
+| Agente | qualquer outro |
+
+## Comandos
+
+| Comando | O que faz |
+| --- | --- |
+| `/monitor` | abre ou fecha o painel |
+| `/monitor on` | liga o monitor. A escolha fica salva entre sessões |
+| `/monitor off` | desliga o monitor. Nada é acompanhado nem desenhado enquanto estiver desligado |
+| `/monitor status` | diz se o monitor está ligado |
+| `/monitor compact` | recolhe o painel em uma faixa com os personagens |
+
+## Configurações
+
+- `language`: `pt` (Português, o padrão) ou `en` (English).
+- `autoOpen`: `subagents` (o padrão) abre o painel quando um subagente começa, uma vez por turno; `never` abre o painel só com `/monitor`.
+
+Altere pelo `/config`, ou no `~/.claude/settings.json`:
 
 ```json
-{ "pluginConfigs": { "agents-monitor": { "options": { "language": "en", "autoOpen": "never" } } } }
+{ "pluginConfigs": { "agents-monitor": { "options": { "language": "pt", "autoOpen": "never" } } } }
 ```
 
-## What the numbers mean
+## O que os números significam
 
-- **Steps** are the main session's tool calls, in order, detected from the calls themselves. They are not a plan.
-- **Per-agent tokens and cost** are estimates from a built-in price table (`hooks/model.ts`, list prices as of 2026-10-10). They are not your bill.
-- **Time** is the turn's elapsed time; it stops when the turn and its subagents finish.
+- **Custo do turno e contexto** vêm do próprio Claude Code, então são os valores reais da sessão.
+- **Tokens e custo de cada agente** são estimativas, marcadas com `≈`. Eles usam uma tabela de preços guardada no código (`hooks/model.ts`, com preços de 10/10/2026). Não são a sua conta.
+- **Etapas** são as chamadas de ferramenta do Claude, na ordem em que aconteceram. Não é um plano prévio.
+- **Tempo** é o tempo do turno. Para quando o turno e os subagentes terminam.
 
-## Credits
+## Solução de problemas
 
-The layout, the dithered bar, the dotted grid, the walking motion and the band's countdown follow savvy-progress and session-band by johnnyvizz (MIT). The pixel figures and their costumes are drawn here from scratch.
+- **A faixa não aparece:** ela só aparece depois do primeiro pedido da sessão. Confira com `/monitor status`. Se estiver `desligado`, rode `/monitor on`. Se você já tiver escondido com `×`, reinicie a sessão.
+- **Mudou alguma coisa e nada aparece:** rode `/reload-plugins` ou reinicie o Claude Code.
+- **O painel não abre:** confira se `/plugin` mostra o `agents-monitor` como habilitado.
+- **Quero o texto em inglês:** use a configuração `language` com `en`.
 
-## Privacy
+## Privacidade
 
-The mod reads only the events Claude Code sends to it. It writes nothing to disk except its on/off choice, and it sends nothing anywhere. Mods run with your permissions, so read the code before you install a mod.
+O mod lê só os eventos que o Claude Code envia para ele. Não grava nada no disco, exceto a escolha de ligado ou desligado. Não envia nada para a internet. Mods rodam com as suas permissões, então leia o código antes de instalar qualquer mod.
 
-Install instructions are in the [repository README](../../README.md).
+## Créditos
+
+O layout, a barra pontilhada, a grade, o movimento e a contagem do cache seguem o savvy-progress e o session-band, de johnnyvizz (MIT). Os personagens pixelados e as roupas de cada papel foram desenhados aqui do zero.
+
+Instruções de instalação gerais estão no [README do repositório](../../README.md).

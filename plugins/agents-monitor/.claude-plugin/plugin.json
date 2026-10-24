@@ -1,0 +1,26 @@
+{
+  "name": "agents-monitor",
+  "version": "0.2.0",
+  "description": "A light alternative to savvy-progress: a band above the prompt and a /monitor pane with pixel agents, a dithered steps bar, time, the engine's session cost and context, and the prompt cache countdown.",
+  "author": { "name": "ThiagoLimaf", "url": "https://github.com/ThiagoLimaf" },
+  "license": "MIT",
+  "homepage": "https://github.com/ThiagoLimaf/claude-agents-monitor/tree/main/plugins/agents-monitor",
+  "repository": "https://github.com/ThiagoLimaf/claude-agents-monitor",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "language": {
+      "type": "string",
+      "title": "Language",
+      "description": "pt (Português) or en (English)",
+      "default": "pt",
+      "options": ["pt", "en"]
+    },
+    "autoOpen": {
+      "type": "string",
+      "title": "Open the monitor pane",
+      "description": "subagents: when a subagent starts, once per turn; never: only with /monitor",
+      "default": "subagents",
+      "options": ["subagents", "never"]
+    }
+  }
+}

@@ -1,5 +1,5 @@
-// Pure helpers for the monitor: prices, formatting, roles and text. No engine
-// import here, so the tests can run on these functions alone.
+// Pure helpers for the monitor: prices, formatting, roles, text and the prompt cache.
+// No engine import here, so the tests run on these functions alone.
 
 import type { Agent, AgentStatus, Role } from '../types'
 
@@ -13,8 +13,8 @@ export type Usage = {
   cache_creation_input_tokens?: number
 }
 
-// USD per million tokens: input, output, cache read, cache write. The first row
-// that matches a model id wins. Cache writes are priced at the 1-hour rate.
+// USD per million tokens: input, output, cache read, cache write. The first row that
+// matches a model id wins. Cache writes are priced at the 1-hour rate.
 // List prices as of 2026-10-10; update this table when prices change.
 type Price = [input: number, output: number, cacheRead: number, cacheWrite: number]
 
@@ -70,6 +70,16 @@ export const fmtCost = (usd: number, lang: Lang): string => {
   return lang === 'pt' ? `US$ ${value.replace('.', ',')}` : `US$ ${value}`
 }
 
+// The prompt cache lasts one hour after the last answer. Seconds left, never negative.
+export const cacheSecondsLeft = (now: number, expiresAt: number): number =>
+  expiresAt > 0 ? Math.max(0, Math.floor((expiresAt - now) / 1000)) : -1
+
+// The band turns amber 20 minutes before the cache expires and red at 10, as session-band does.
+export const cacheLevel = (seconds: number): 'ok' | 'warn' | 'alert' => {
+  if (seconds < 0) return 'ok'
+  return seconds <= 10 * 60 ? 'alert' : seconds <= 20 * 60 ? 'warn' : 'ok'
+}
+
 // The role from a subagent type name. Unknown names are plain agents.
 export const roleOf = (subagentType: string): Role => {
   const name = subagentType.toLowerCase()
@@ -96,15 +106,27 @@ const TEXT = {
     statusLine: (isOn: boolean) => (isOn ? 'Monitor ligado.' : 'Monitor desligado.'),
     main: 'Claude',
     mainDesc: 'Resposta ao seu pedido',
-    team: 'Equipe',
+    started: 'Começou',
+    interrupted: 'Interrompido',
+    thinking: 'Pensando',
+    turnStarted: 'Turno iniciado',
+    turnFinished: 'Turno concluído',
+    team: 'Agentes',
     steps: 'Etapas',
     log: 'Atividade',
     none: 'Nenhuma atividade ainda.',
-    time: 'tempo',
+    cost: 'Custo',
     tokens: 'tokens',
-    cost: 'custo estimado',
-    detected: 'detectadas',
-    agents: 'agentes',
+    time: 'Tempo',
+    cache: 'Cache',
+    expired: 'expirado',
+    context: 'Contexto',
+    running: 'Trabalhando',
+    finished: 'Concluídos',
+    compact: 'Compacto',
+    expand: 'Expandir',
+    estimate: 'estimativa',
+    tools: 'ferramentas',
     move: ['Mover para a esquerda', 'Mover para a direita'],
     roles: {
       main: 'Principal',
@@ -127,15 +149,27 @@ const TEXT = {
     statusLine: (isOn: boolean) => (isOn ? 'Monitor is on.' : 'Monitor is off.'),
     main: 'Claude',
     mainDesc: 'Reply to your request',
-    team: 'Team',
+    started: 'Started',
+    interrupted: 'Interrupted',
+    thinking: 'Thinking',
+    turnStarted: 'Turn started',
+    turnFinished: 'Turn finished',
+    team: 'Agents',
     steps: 'Steps',
     log: 'Activity',
     none: 'No activity yet.',
-    time: 'time',
+    cost: 'Cost',
     tokens: 'tokens',
-    cost: 'estimated cost',
-    detected: 'detected',
-    agents: 'agents',
+    time: 'Time',
+    cache: 'Cache',
+    expired: 'expired',
+    context: 'Context',
+    running: 'Working',
+    finished: 'Finished',
+    compact: 'Compact',
+    expand: 'Expand',
+    estimate: 'estimate',
+    tools: 'tools',
     move: ['Move left', 'Move right'],
     roles: {
       main: 'Main',
@@ -162,11 +196,9 @@ export const statusOf = (agent: Agent, agents: readonly Agent[]): AgentStatus =>
 export const toolLabel = (tool: string, input: Record<string, unknown>): string => {
   const raw = input.file_path ?? input.path ?? input.command ?? input.pattern ?? input.description ?? ''
   const text = typeof raw === 'string' ? raw : ''
-  const shown = text.includes('/') && !text.includes(' ') ? text.split('/').pop() ?? text : text
+  const shown = text.includes('/') && !text.includes(' ') ? (text.split('/').pop() ?? text) : text
   const detail = shown.length > 48 ? `${shown.slice(0, 47)}…` : shown
   return detail ? `${tool} ${detail}` : tool
 }
 
-// How many figures are working, for the band.
-export const workingCount = (agents: readonly Agent[]): number =>
-  agents.filter(a => a.status === 'running').length
+export const workingCount = (agents: readonly Agent[]): number => agents.filter(a => a.status === 'running').length

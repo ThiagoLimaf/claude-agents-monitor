@@ -2,8 +2,8 @@ import { expect, test } from 'claude-code/testing'
 
 import type { Agent } from '../types'
 
-import { costOf, fmtCost, fmtTime, fmtTokens, roleOf, statusOf, toolLabel, tokensOf } from './model'
-import { sceneSvg } from './scene'
+import { cacheLevel, cacheSecondsLeft, costOf, fmtCost, fmtTime, fmtTokens, roleOf, statusOf, toolLabel, tokensOf } from './model'
+import { ditherBar, figureSvg } from './sprites'
 
 const agent = (over: Partial<Agent>): Agent => ({
   id: 'a',
@@ -52,6 +52,17 @@ test('a counter the engine leaves out counts as zero', () => {
   expect(costOf('claude-haiku-5-5', {}, true)).toBe(0)
 })
 
+test('the prompt cache counts down one hour and turns amber, then red', () => {
+  const expires = 3_600_000
+  expect(cacheSecondsLeft(0, expires)).toBe(3600)
+  expect(cacheSecondsLeft(expires + 1, expires)).toBe(0)
+  expect(cacheSecondsLeft(0, 0)).toBe(-1)
+  expect(cacheLevel(3600)).toBe('ok')
+  expect(cacheLevel(19 * 60)).toBe('warn')
+  expect(cacheLevel(9 * 60)).toBe('alert')
+  expect(cacheLevel(-1)).toBe('ok')
+})
+
 test('the role follows the subagent type name', () => {
   expect(roleOf('Explore')).toBe('research')
   expect(roleOf('Plan')).toBe('plan')
@@ -74,14 +85,10 @@ test('a tool label keeps the file name, not the whole path', () => {
   expect(toolLabel('Grep', {})).toBe('Grep')
 })
 
-test('the scene holds one figure per agent and grows with the crew', () => {
-  const one = sceneSvg([{ role: 'main', status: 'running', index: 0 }])
-  const three = sceneSvg([
-    { role: 'main', status: 'running', index: 0 },
-    { role: 'research', status: 'waiting', index: 1 },
-    { role: 'test', status: 'done', index: 2 },
-  ])
-  expect(one.width).toBe(56)
-  expect(three.width).toBe(168)
-  expect(three.source.split('class="fig').length - 1).toBe(3)
+test('a figure carries its role and state, and a bar fills with its ratio', () => {
+  const figure = figureSvg('research', 'running', 0, 0, 1)
+  expect(figure.includes('class="fig c-research run"')).toBe(true)
+  expect(figureSvg('test', 'done', 0, 0, 1).includes('fig c-test done')).toBe(true)
+  expect(ditherBar(100, 16, 0, '#000').includes('<rect class="t')).toBe(false)
+  expect(ditherBar(100, 16, 1, '#000').includes('<rect class="t')).toBe(true)
 })

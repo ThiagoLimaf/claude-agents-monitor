@@ -1,58 +1,40 @@
-# Agents Monitor for Claude Code
+# claude-agents-monitor
 
-A Claude Code mod that shows what Claude is doing, in the same place as the savvy-progress band and pane: a band above the prompt, and a pane you open with `/monitor`. Each agent is a small figure that walks while it works, waits while another agent runs, and hops when it finishes. The pane also shows time, tokens, estimated cost, the steps of the main session, and an activity log.
+Mods for [Claude Code](https://claude.com/claude-code). Every item is a standalone plugin under `plugins/`: install only what you need.
 
-It works in any conversation, not only in savvy-flow runs. It makes no model calls, reads no files, uses no network, and adds no tools for Claude to see, so it costs no extra tokens.
+| Plugin | Type | What it does |
+| --- | --- | --- |
+| [agents-monitor](plugins/agents-monitor) | mod | A light alternative to savvy-progress, in the same place: a band above the prompt and a `/monitor` pane with pixel agents, steps, time, the engine's cost and context, and the prompt cache countdown. No model tokens. |
 
 ## Install
 
-In a terminal session, at the prompt:
+### From the marketplace
+
+In Claude Code:
 
 ```
-/plugin install agents-monitor --marketplace ThiagoLimaf/claude-agents-monitor
+/plugin marketplace add ThiagoLimaf/claude-agents-monitor
+/plugin install agents-monitor@claude-agents-monitor
 ```
+
+Restart the session afterwards, or run `/reload-plugins`.
 
 From a shell:
 
 ```bash
-claude plugin install agents-monitor --marketplace ThiagoLimaf/claude-agents-monitor
+claude plugin marketplace add ThiagoLimaf/claude-agents-monitor
+claude plugin install agents-monitor@claude-agents-monitor --scope user
 ```
 
-In the desktop app, click + next to the prompt box, then Plugins, Add marketplace with `ThiagoLimaf/claude-agents-monitor`, then Add plugin.
+### By hand
 
-## Commands
-
-- `/monitor` opens or closes the pane.
-- `/monitor on` turns the monitor on. It stays on across sessions.
-- `/monitor off` turns it off. Nothing is tracked and nothing is drawn while it is off.
-- `/monitor status` says whether it is on.
-
-## Language
-
-The `language` option is `pt` (Português, the default) or `en`. Set it in `/config`, or in `~/.claude/settings.json`:
-
-```json
-{ "pluginConfigs": { "agents-monitor": { "options": { "language": "en" } } } }
+```bash
+git clone https://github.com/ThiagoLimaf/claude-agents-monitor.git ~/claude-agents-monitor
+claude --plugin-dir ~/claude-agents-monitor/plugins/agents-monitor
 ```
 
-## What the numbers mean
-
-- **Cost** is an estimate: tokens multiplied by a built-in price table (`hooks/model.ts`, list prices as of 2026-10-10). It is not your bill.
-- **Steps** are the main session's tool calls, in order. They are detected from the calls themselves, not from a plan.
-- **Time** is the elapsed time of the current turn. The clock only ticks while the turn or a subagent is running.
-
-## Privacy and safety
-
-The mod reads only the events Claude Code sends to it. It sends nothing anywhere, writes nothing to disk except its on/off setting, and does not read your files. Mods run with your permissions, so read the code before you install any mod. It is in this repository.
-
-## Requirements
-
-Claude Code 2.1.286 or newer, with mods enabled.
+For every session, set `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json`, as the [claude-kit README](https://github.com/johnnyvizz/claude-kit) describes.
 
 ## Credits and license
 
-Inspired by [savvy-progress](https://github.com/johnnyvizz/claude-kit/tree/main/plugins/savvy-progress) by johnnyvizz. The code and the figures are written from scratch. Licensed under the MIT License; see [LICENSE](LICENSE).
-
-## Contributing
-
-Issues and pull requests are welcome. Run `claude plugin validate .` and `claude plugin test .` before you open one. See [CONTRIBUTING.md](CONTRIBUTING.md).
+The look and the motion follow [savvy-progress](https://github.com/johnnyvizz/claude-kit/tree/main/plugins/savvy-progress) and [session-band](https://github.com/johnnyvizz/claude-kit/tree/main/plugins/session-band) by johnnyvizz, both MIT. The code here is written from scratch. Licensed under the MIT License; see [LICENSE](LICENSE).

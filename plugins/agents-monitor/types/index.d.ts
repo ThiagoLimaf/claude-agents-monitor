@@ -29,12 +29,20 @@ export type Board = {
   // 0 until the first prompt of the session; 0 for turnEndedAt while the turn runs.
   turnStartedAt: number
   turnEndedAt: number
+  // The engine's own figures, not an estimate: session cost in USD, context fill in percent.
+  sessionCost: number
+  sessionCostAtStart: number
+  context: number
+  // Epoch milliseconds when the prompt cache expires: one hour after the last answer. 0 when unknown.
+  cacheExpiresAt: number
   // The main session first, then the subagents in the order they started.
   agents: Agent[]
   // The main session's tool calls, oldest first.
   steps: Step[]
   // Newest first.
   log: LogLine[]
+  isCompact: boolean
+  isDoneCollapsed: boolean
 }
 
 declare module 'claude-code' {

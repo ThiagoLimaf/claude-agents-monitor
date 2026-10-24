@@ -1,0 +1,15 @@
+{
+  "name": "claude-agents-monitor",
+  "owner": {
+    "name": "ThiagoLimaf",
+    "url": "https://github.com/ThiagoLimaf"
+  },
+  "plugins": [
+    {
+      "name": "agents-monitor",
+      "source": "./",
+      "description": "Monitor for Claude Code: a band above the prompt and a /monitor pane with animated agent figures, steps, time, tokens and estimated cost."
+    }
+  ],
+  "description": "Monitor for Claude Code: a band above the prompt and a /monitor pane with animated agent figures."
+}

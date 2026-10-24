@@ -20,7 +20,7 @@ Aparece acima do campo de digitação depois do primeiro pedido da sessão. Most
 Os botões da faixa:
 
 - `×N` abre ou fecha o painel. O N é o número de subagentes.
-- `×` esconde a faixa nesta sessão. Para mostrar de novo, use `/monitor on`.
+- `×` esconde a faixa nesta sessão. Para mostrar de novo, use `/monitor-on`.
 
 ### O painel
 
@@ -50,13 +50,15 @@ Cada subagente recebe um papel pelo nome do tipo dele:
 
 ## Comandos
 
+Cada comando tem nome próprio, com hífen e sem espaço. Digite-os no campo de mensagem.
+
 | Comando | O que faz |
 | --- | --- |
 | `/monitor` | abre ou fecha o painel |
-| `/monitor on` | liga o monitor. A escolha fica salva entre sessões |
-| `/monitor off` | desliga o monitor. Nada é acompanhado nem desenhado enquanto estiver desligado |
-| `/monitor status` | diz se o monitor está ligado |
-| `/monitor compact` | recolhe o painel em uma faixa com os personagens |
+| `/monitor-on` | liga o monitor. A escolha fica salva entre sessões |
+| `/monitor-off` | desliga o monitor. Nada é acompanhado nem desenhado enquanto estiver desligado |
+| `/monitor-status` | diz se o monitor está ligado |
+| `/monitor-compact` | recolhe o painel em uma faixa com os personagens |
 
 ## Configurações
 
@@ -78,7 +80,7 @@ Altere pelo `/config`, ou no `~/.claude/settings.json`:
 
 ## Solução de problemas
 
-- **A faixa não aparece:** ela só aparece depois do primeiro pedido da sessão. Confira com `/monitor status`. Se estiver `desligado`, rode `/monitor on`. Se você já tiver escondido com `×`, reinicie a sessão.
+- **A faixa não aparece:** ela só aparece depois do primeiro pedido da sessão. Confira com `/monitor-status`. Se estiver `desligado`, rode `/monitor-on`. Se você já tiver escondido com `×`, reinicie a sessão.
 - **Mudou alguma coisa e nada aparece:** rode `/reload-plugins` ou reinicie o Claude Code.
 - **O painel não abre:** confira se `/plugin` mostra o `agents-monitor` como habilitado.
 - **Quero o texto em inglês:** use a configuração `language` com `en`.

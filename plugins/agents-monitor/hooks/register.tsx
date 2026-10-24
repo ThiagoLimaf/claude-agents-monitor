@@ -131,6 +131,12 @@ const totalsOf = (b: Board) => {
 
 const stepsWord = (): string => textOf(lang).steps.toLowerCase()
 
+async function setOn($: EngineInterface, isOn: boolean): Promise<{ text: string }> {
+  await $.store.set(ENABLED, isOn)
+  await update($, board, prev => ({ ...prev, isOn }))
+  return { text: isOn ? textOf(lang).on : textOf(lang).off }
+}
+
 export const register: Register = (on, options) => {
   const opts = options as { language?: unknown; autoOpen?: unknown }
   lang = String(opts.language ?? 'pt') === 'en' ? 'en' : 'pt'
@@ -140,36 +146,34 @@ export const register: Register = (on, options) => {
     const started = await next(e)
     const saved = await $.store.get(ENABLED)
     await update($, board, prev => ({ ...prev, isOn: saved !== false }))
-    await $.command.register({
-      name: 'monitor',
-      description: say(
-        'Painel do monitor. Também: /monitor on, /monitor off, /monitor status, /monitor compact',
-        'Monitor pane. Also: /monitor on, /monitor off, /monitor status, /monitor compact',
-      ),
-    })
+    const t = textOf(lang)
+    await $.command.register({ name: 'monitor', description: t.commandPane })
+    await $.command.register({ name: 'monitor-on', description: t.commandOn })
+    await $.command.register({ name: 'monitor-off', description: t.commandOff })
+    await $.command.register({ name: 'monitor-status', description: t.commandStatus })
+    await $.command.register({ name: 'monitor-compact', description: t.commandCompact })
 
     return started
   })
 
-  on('command.run', { command: 'monitor' }, async ($, e) => {
-    const t = textOf(lang)
-    const arg = e.args.trim().toLowerCase()
-    if (arg === 'on' || arg === 'off') {
-      const isOn = arg === 'on'
-      await $.store.set(ENABLED, isOn)
-      await update($, board, prev => ({ ...prev, isOn }))
-      return { text: isOn ? t.on : t.off }
-    }
-    if (arg === 'status') {
-      const b = await read($, board)
-      return { text: t.statusLine(b.isOn) }
-    }
-    if (arg === 'compact') {
-      await update($, board, prev => ({ ...prev, isCompact: !prev.isCompact }))
-      return { text: t.compact }
-    }
+  // Each command has its own name with a hyphen: /monitor, /monitor-on, /monitor-off, /monitor-status, /monitor-compact.
+  on('command.run', { command: 'monitor' }, async $ => {
     const opened = await togglePane($)
-    return { text: opened ? t.opened : t.closed }
+    return { text: opened ? textOf(lang).opened : textOf(lang).closed }
+  })
+
+  on('command.run', { command: 'monitor-on' }, async $ => setOn($, true))
+
+  on('command.run', { command: 'monitor-off' }, async $ => setOn($, false))
+
+  on('command.run', { command: 'monitor-status' }, async $ => {
+    const b = await read($, board)
+    return { text: textOf(lang).statusLine(b.isOn) }
+  })
+
+  on('command.run', { command: 'monitor-compact' }, async $ => {
+    await update($, board, prev => ({ ...prev, isCompact: !prev.isCompact }))
+    return { text: textOf(lang).compact }
   })
 
   on('prompt.submit', async ($, e, next) => {

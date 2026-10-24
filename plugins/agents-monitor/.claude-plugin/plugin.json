@@ -1,6 +1,6 @@
 {
   "name": "agents-monitor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Alternativa leve ao savvy-progress: faixa acima do prompt e painel /monitor com agentes em pixel, etapas, tempo, custo e contexto.",
   "author": {
     "name": "ThiagoLimaf",
